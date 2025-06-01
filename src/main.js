@@ -81,7 +81,7 @@ function generateTable(articles) {
     container.appendChild(table);
 };
 
-const loadArticles = async (sortOption = 'date_desc') => {
+const loadArticles = async (sortOption = 'date_asc') => {
     const articles = await fetchArticles(sortOption);
     generateTable(articles);
 };
