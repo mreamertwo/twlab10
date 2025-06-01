@@ -5,21 +5,30 @@ function formatDate(dateString) {
     return format(date, 'dd-MM-yyyy');
 }
 
-document.getElementById('sort-selector').addEventListener('change', async (event) => {
+let sort = document.getElementById('sort-selector')
+sort.addEventListener('change', async (event) => {
     const sortOption = event.target.value;
     await loadArticles(sortOption);
 });
 
-const fetchArticles = async (order = 'created_at.desc') => {
+const fetchArticles = async (sortBy) => {
     try {
-        const response = await fetch(
-            `https://lkxilyvnwmbxbbhevwxb.supabase.co/rest/v1/article?select=*&order=${order}`, {
+        let url = 'https://lkxilyvnwmbxbbhevwxb.supabase.co/rest/v1/article?select=*';
+
+        if (sortBy === 'date_asc') {
+            url = 'https://lkxilyvnwmbxbbhevwxb.supabase.co/rest/v1/article?select=*&order=created_at.asc';
+        } else if (sortBy === 'date_desc') {
+            url = 'https://lkxilyvnwmbxbbhevwxb.supabase.co/rest/v1/article?select=*&order=created_at.desc';
+        } else if (sortBy === 'title_asc') {
+            url = 'https://lkxilyvnwmbxbbhevwxb.supabase.co/rest/v1/article?select=*&order=title.asc';
+        }
+
+        const response = await fetch(url, {
             headers: {
                 apiKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxreGlseXZud21ieGJiaGV2d3hiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NTI4MTAsImV4cCI6MjA2MzIyODgxMH0.FbWJZbdZeMxbrcB7QzADsKBrM950VEvx-QLPRyzrheI',
             },
         });
         const data = await response.json();
-        console.log(data);
         return data;
     } catch (error) {
         console.error('Fetch error:', error);
@@ -72,7 +81,7 @@ function generateTable(articles) {
     container.appendChild(table);
 };
 
-const loadArticles = async (sortOption = 'created_at.desc') => {
+const loadArticles = async (sortOption = 'date_desc') => {
     const articles = await fetchArticles(sortOption);
     generateTable(articles);
 };
